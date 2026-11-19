@@ -24,11 +24,26 @@ function SignupForm() {
     }));
   }
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const result = validateSignupForm(formData);
     setErrors(result.errors);
-    setSubmitted(result.isValid);
+    if(!result.isValid) return
+    try{
+      const res= await fetch('http://localhost:3000/api/signup', {
+        method:'POST',
+        headers:{'Content-Type': 'application/json'},
+        body:JSON.stringify({
+          name:formData.name,
+          email:formData.email
+        })
+      })
+      const data= await res.json()
+      console.log(data)
+      setSubmitted(true);
+    }catch(err){
+      console.error(err)
+    }
   }
 
   return (
@@ -95,7 +110,7 @@ function SignupForm() {
 
       {submitted && (
         <p style={{ color: 'green', marginTop: '1rem' }}>
-          Registrering lyckades! (ingen riktig backend än 😉)
+          Registrering lyckades!
         </p>
       )}
     </form>
